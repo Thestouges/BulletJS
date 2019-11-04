@@ -225,8 +225,6 @@ function checkPlayerPositionInArena(){
     
     if (distance > radius)
     {
-        console.log("ouside");
-        
         var fromOriginToObject = newLocation.subtract(centerPosition);
         fromOriginToObject.x *= (radius / distance);
         fromOriginToObject.y *= (radius / distance);
