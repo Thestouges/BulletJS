@@ -185,9 +185,6 @@ function FireBullet(e){
     var mousepos = getMousePos(canvas, e);
     var bullet = new Bullet(player.position.x,player.position.y,bulletspeed,Victor(-(player.position.x - mousepos.x), -(player.position.y - mousepos.y)));
     var index = bullets.push(bullet);
-
-    //var linetofromcenter = Victor(mousepos.x,mousepos.y);
-    //lines.push(linetofromcenter);
 }
 
 function DrawUpdateBullets(){
@@ -213,7 +210,7 @@ function DestroyBullets(){
         if(bullets[i].position.x < 0 || bullets[i].position.y < 0
             || bullets[i].position.x > canvas.width || bullets[i].position.y > canvas.height){
                 bullets.splice(i,1);
-            }
+        }
     }
 }
 
