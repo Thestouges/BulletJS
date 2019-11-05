@@ -10,9 +10,10 @@ var lines;
 
 var player;
 var playersize = 50;
+var playerSpeed = 2;
 
 var enemies;
-var enemySpawnDistance = 250;
+var enemySpawnDistance;
 var enemySpeed = 1;
 var enemySize = 50;
 
@@ -38,17 +39,21 @@ function initialize(){
     var linetofromcenter = Victor(0,0);
     lines.push(linetofromcenter);
 
-    setInterval(redraw, 10);
-    setInterval(spawnEnemy, 1000);
-
     getCurrentCenter();
     initializePlayer();
+
+    //enemySpawnDistance = Math.max(canvas.height, canvas.width);
+    enemySpawnDistance = 250;
 
     window.addEventListener('resize', getCurrentCenter);
     canvas.addEventListener('mousemove', updatePlayer);
     window.addEventListener("keydown", keyboardDownEvent);
     window.addEventListener("keyup", keyboardUpEvent);
     canvas.addEventListener('click', FireBullet, false);
+
+    setInterval(redraw, 10);
+    setInterval(spawnEnemy, 1000);
+    //spawnEnemy();
 }
 
 function SetMovementKeys(){
@@ -117,7 +122,7 @@ function updatePlayer(e){
 }
 
 function initializePlayer(){
-    player = new Player(new Victor(0,0),50,0);
+    player = new Player(new Victor(0,0),playerSpeed,0);
     //alert(center.x+" " +player.position.x+" "+player.position.y);
 }
 
@@ -147,6 +152,7 @@ function redraw(){
     drawArena();
     drawPlayer();
     drawEnemies();
+    updateEnemies();
     DrawUpdateBullets();
     DestroyBullets();
     drawTestLine();
@@ -266,30 +272,26 @@ function spawnEnemy(){
 
     //console.log(normVec.toString());
 
-    enemies.push(new Enemy(normVec,enemySpeed,0,0));
+    enemies.push(new Enemy(normVec,enemySpeed,0));
 }
 
 function drawEnemies(){
     enemies.forEach(element => {
         context.beginPath();
-        context.save();
-        //context.rect(player.position.x-playersize/2,player.position.y-playersize/2,playersize,playersize);
-        //context.translate(canvas.width/2+enemySize/2,canvas.height/2+enemySize/2);
-        //console.log(player.rotation);
-        //context.rotate(player.rotation);
-        //context.translate(-player.position.x,-player.position.y);
         context.arc(element.position.x-enemySize/2,element.position.y-enemySize/2,enemySize/2,0,2*Math.PI);
-        context.stroke()
-        context.restore();
-
+        context.stroke();
         
         context.save();
         context.beginPath();
         context.moveTo(element.position.x-enemySize/2, element.position.y-enemySize/2);
-        //context.translate(-player.position.x,-player.position.y);
         context.lineTo(player.position.x,player.position.y);
         context.stroke();
-        context.restore();
         
+    });
+}
+
+function updateEnemies(){
+    enemies.forEach(element => {
+        element.updatePosition(Victor(player.position.x+playersize/2,player.position.y+playersize/2));
     });
 }

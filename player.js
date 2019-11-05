@@ -6,8 +6,8 @@ class Player{
     }
 
     movePlayerPos(movement){
-        this.position.x += movement.x;
-        this.position.y += movement.y;
+        this.position.x += movement.x*this.speed;
+        this.position.y += movement.y*this.speed;
     }
 
     updatePlayerPos(pos){

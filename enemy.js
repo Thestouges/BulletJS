@@ -1,16 +1,16 @@
 class Enemy{
-    constructor(pos, speed, direction, rot){
+    constructor(pos, speed, rot){
         this.position = pos;
         this.speed = speed;
-        this.direction = direction;
         this.rotation = rot;
     }
 
-    updatePosition(){
-        var vecdir = this.direction;
+    updatePosition(targetpos){
+        var vecdir = Victor(this.position.x,this.position.y);
+        vecdir.subtract(targetpos).normalize();
         vecdir.multiply(Victor(this.speed, this.speed));
-        this.position = this.position.add(vecdir);
-        this.direction.normalize();
+        this.position = this.position.subtract(vecdir);
+        console.log(this.position+ " "+ targetpos);
     }
 
     updateRotation(object){
