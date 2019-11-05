@@ -3,7 +3,7 @@ var context;
 var arenaSize = 150;
 var bullets;
 var centedsr;
-var bulletspeed = 10;
+var bulletspeed = 8;
 var bulletsize = 5;
 
 var lines;
@@ -16,12 +16,17 @@ var enemies;
 var enemySpawnDistance;
 var enemySpeed = 1;
 var enemySize = 50;
+var enemylimit = 30;
 
 var keyStack;
 
 var mousePos;
 
 function initialize(){
+    initializeGame();
+}
+
+function initializeGame(){
     canvas = document.getElementById('myCanvas');
     context = canvas.getContext("2d");
     context.translate(canvas.width/2, canvas.height/2);
@@ -42,8 +47,8 @@ function initialize(){
     getCurrentCenter();
     initializePlayer();
 
-    //enemySpawnDistance = Math.max(canvas.height, canvas.width);
-    enemySpawnDistance = 250;
+    enemySpawnDistance = Math.max(canvas.height, canvas.width);
+    //enemySpawnDistance = 250;
 
     window.addEventListener('resize', getCurrentCenter);
     canvas.addEventListener('mousemove', updatePlayer);
@@ -155,7 +160,7 @@ function redraw(){
     updateEnemies();
     DrawUpdateBullets();
     DestroyBullets();
-    drawTestLine();
+    //drawTestLine();
 }
 
 function drawTestLine(){
@@ -241,7 +246,32 @@ function DestroyBullets(){
         if(bullets[i].position.x < -canvas.width/2 || bullets[i].position.y < -canvas.height/2
             || bullets[i].position.x > canvas.width/2 || bullets[i].position.y > canvas.height/2){
                 bullets.splice(i,1);
+                i--;
+                continue;
         }
+
+        for(var j = 0; j < enemies.length; j++){
+            if(CheckIntersection(bulletsize, bullets[i].position, enemySize, enemies[j].position)){
+                bullets.splice(i,1);
+                enemies.splice(j,1);
+                i--;
+                break;
+            }
+        }
+    }
+}
+
+function CheckIntersection(object1Size, object1Pos, object2Size, object2Pos){
+    var radius = object2Size - object1Size/2;
+    var centerPosition = new Victor(object1Pos.x, object1Pos.y); 
+    var newLocation = new Victor(object2Pos.x,object2Pos.y);
+    var distance = newLocation.distance(centerPosition);
+
+    if(distance <= radius){
+        return true;
+    }
+    else{
+        return false;
     }
 }
 
@@ -262,6 +292,9 @@ function checkPlayerPositionInArena(){
 }
 
 function spawnEnemy(){
+    if(enemies.length >= enemylimit){
+        return;
+    }
     var posx = Math.random()*2 - 1;
     var posy = Math.random()*2 - 1;
 

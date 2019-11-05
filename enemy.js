@@ -10,7 +10,7 @@ class Enemy{
         vecdir.subtract(targetpos).normalize();
         vecdir.multiply(Victor(this.speed, this.speed));
         this.position = this.position.subtract(vecdir);
-        console.log(this.position+ " "+ targetpos);
+        //console.log(this.position+ " "+ targetpos);
     }
 
     updateRotation(object){
