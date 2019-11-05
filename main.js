@@ -2,7 +2,7 @@ var canvas;
 var context;
 var arenaSize = 150;
 var bullets;
-var center;
+var centedsr;
 var bulletspeed = 10;
 var bulletsize = 5;
 
@@ -10,6 +10,11 @@ var lines;
 
 var player;
 var playersize = 50;
+
+var enemies;
+var enemySpawnDistance = 250;
+var enemySpeed = 1;
+var enemySize = 50;
 
 var keyStack;
 
@@ -22,6 +27,7 @@ function initialize(){
 
     bullets = [];
     lines = [];
+    enemies = [];
 
     mousePos = new Victor(0,0);
 
@@ -31,6 +37,7 @@ function initialize(){
     lines.push(linetofromcenter);
 
     setInterval(redraw, 10);
+    setInterval(spawnEnemy, 1000);
 
     getCurrentCenter();
     initializePlayer();
@@ -137,8 +144,22 @@ function redraw(){
     clearCanvas();
     drawArena();
     drawPlayer();
+    drawEnemies();
     DrawUpdateBullets();
     DestroyBullets();
+    drawTestLine();
+}
+
+function drawTestLine(){
+    context.beginPath();
+    context.moveTo(canvas.width, 0);
+    context.lineTo(0, canvas.height);
+    context.stroke();
+
+    context.beginPath();
+    context.moveTo(0, 0);
+    context.lineTo(canvas.width, canvas.height);
+    context.stroke();
 }
 
 function movePlayer(){
@@ -228,4 +249,33 @@ function checkPlayerPositionInArena(){
         newLocation = centerPosition.add(fromOriginToObject);
         player.updatePlayerPos(newLocation);
     }
+}
+
+function spawnEnemy(){
+    var posx = Math.random()*2 - 1;
+    var posy = Math.random()*2 - 1;
+
+    var normVec = new Victor(posx, posy);
+    normVec.normalize();
+
+    normVec.multiply(Victor(enemySpawnDistance, enemySpawnDistance))
+
+    console.log(normVec.toString());
+
+    enemies.push(new Enemy(normVec,enemySpeed,0,0));
+}
+
+function drawEnemies(){
+    enemies.forEach(element => {
+        context.beginPath();
+        context.save();
+        //context.rect(player.position.x-playersize/2,player.position.y-playersize/2,playersize,playersize);
+        context.translate(canvas.width/2+enemySize/2,canvas.height/2+enemySize/2);
+        //console.log(player.rotation);
+        //context.rotate(player.rotation);
+        //context.translate(-player.position.x,-player.position.y);
+        context.arc(element.position.x-enemySize/2,element.position.y-enemySize/2,enemySize,0,2*Math.PI);
+        context.stroke();
+        context.restore();
+    });
 }

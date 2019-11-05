@@ -1,8 +1,8 @@
 class Enemy{
-    constructor(pos, speed, vector, rot){
+    constructor(pos, speed, direction, rot){
         this.position = pos;
         this.speed = speed;
-        this.direction = vector;
+        this.direction = direction;
         this.rotation = rot;
     }
 
