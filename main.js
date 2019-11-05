@@ -23,6 +23,8 @@ var mousePos;
 function initialize(){
     canvas = document.getElementById('myCanvas');
     context = canvas.getContext("2d");
+    context.translate(canvas.width/2, canvas.height/2);
+
     context.lineWidth = 1;
 
     bullets = [];
@@ -115,7 +117,7 @@ function updatePlayer(e){
 }
 
 function initializePlayer(){
-    player = new Player(new Victor(center.x,center.y),50,0);
+    player = new Player(new Victor(0,0),50,0);
     //alert(center.x+" " +player.position.x+" "+player.position.y);
 }
 
@@ -152,13 +154,13 @@ function redraw(){
 
 function drawTestLine(){
     context.beginPath();
-    context.moveTo(canvas.width, 0);
-    context.lineTo(0, canvas.height);
+    context.moveTo(-canvas.width, canvas.height);
+    context.lineTo(canvas.width, -canvas.height);
     context.stroke();
 
     context.beginPath();
-    context.moveTo(0, 0);
-    context.lineTo(canvas.width, canvas.height);
+    context.moveTo(canvas.width, canvas.height);
+    context.lineTo(-canvas.width, -canvas.height);
     context.stroke();
 }
 
@@ -181,19 +183,21 @@ function getCurrentCenter(){
     canvas.width = document.documentElement.clientWidth;
     canvas.height = document.documentElement.clientHeight;
     center = Victor(canvas.width/2,canvas.height/2);
+
+    context.translate(center.x, center.y);
 }
 
 function drawArena(){
     context.beginPath();
-    context.arc(center.x,center.y,arenaSize,0,2*Math.PI);
+    context.arc(0,0,arenaSize,0,2*Math.PI);
     context.stroke();
 }
 
 function getMousePos(canvas, evt) {
     var rect = canvas.getBoundingClientRect();
     return {
-        x: (evt.clientX - rect.left) / (rect.right - rect.left) * canvas.width,
-        y: (evt.clientY - rect.top) / (rect.bottom - rect.top) * canvas.height
+        x: ((evt.clientX - rect.left) / (rect.right - rect.left) * canvas.width) - canvas.width/2,
+        y: ((evt.clientY - rect.top) / (rect.bottom - rect.top) * canvas.height) - canvas.height/2
     };
 }
 
@@ -228,8 +232,8 @@ function DrawUpdateBullets(){
 
 function DestroyBullets(){
     for(var i = 0; i < bullets.length; i++){
-        if(bullets[i].position.x < 0 || bullets[i].position.y < 0
-            || bullets[i].position.x > canvas.width || bullets[i].position.y > canvas.height){
+        if(bullets[i].position.x < -canvas.width/2 || bullets[i].position.y < -canvas.height/2
+            || bullets[i].position.x > canvas.width/2 || bullets[i].position.y > canvas.height/2){
                 bullets.splice(i,1);
         }
     }
@@ -237,7 +241,7 @@ function DestroyBullets(){
 
 function checkPlayerPositionInArena(){
     var radius = arenaSize - playersize/2;
-    var centerPosition = new Victor(center.x, center.y); 
+    var centerPosition = new Victor(0, 0); 
     var newLocation = new Victor(player.position.x,player.position.y);
     var distance = newLocation.distance(centerPosition);
     
@@ -260,7 +264,7 @@ function spawnEnemy(){
 
     normVec.multiply(Victor(enemySpawnDistance, enemySpawnDistance))
 
-    console.log(normVec.toString());
+    //console.log(normVec.toString());
 
     enemies.push(new Enemy(normVec,enemySpeed,0,0));
 }
@@ -270,12 +274,22 @@ function drawEnemies(){
         context.beginPath();
         context.save();
         //context.rect(player.position.x-playersize/2,player.position.y-playersize/2,playersize,playersize);
-        context.translate(canvas.width/2+enemySize/2,canvas.height/2+enemySize/2);
+        //context.translate(canvas.width/2+enemySize/2,canvas.height/2+enemySize/2);
         //console.log(player.rotation);
         //context.rotate(player.rotation);
         //context.translate(-player.position.x,-player.position.y);
-        context.arc(element.position.x-enemySize/2,element.position.y-enemySize/2,enemySize,0,2*Math.PI);
+        context.arc(element.position.x-enemySize/2,element.position.y-enemySize/2,enemySize/2,0,2*Math.PI);
+        context.stroke()
+        context.restore();
+
+        
+        context.save();
+        context.beginPath();
+        context.moveTo(element.position.x-enemySize/2, element.position.y-enemySize/2);
+        //context.translate(-player.position.x,-player.position.y);
+        context.lineTo(player.position.x,player.position.y);
         context.stroke();
         context.restore();
+        
     });
 }
