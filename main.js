@@ -16,14 +16,18 @@ var enemies;
 var enemySpawnDistance;
 var enemySpeed = 1;
 var enemySize = 50;
-var enemylimit = 30;
+var enemylimit = 1;
 
 var keyStack;
 
 var mousePos;
 
+var timerInterval = [];
+
 function initialize(){
     initializeGame();
+    setTimerInvervals();
+    setEventListeners()
 }
 
 function initializeGame(){
@@ -48,17 +52,19 @@ function initializeGame(){
     initializePlayer();
 
     enemySpawnDistance = Math.max(canvas.height, canvas.width);
-    //enemySpawnDistance = 250;
+}
 
+function setEventListeners(){
     window.addEventListener('resize', getCurrentCenter);
     canvas.addEventListener('mousemove', updatePlayer);
     window.addEventListener("keydown", keyboardDownEvent);
     window.addEventListener("keyup", keyboardUpEvent);
     canvas.addEventListener('click', FireBullet, false);
+}
 
+function setTimerInvervals(){
     setInterval(redraw, 10);
     setInterval(spawnEnemy, 1000);
-    //spawnEnemy();
 }
 
 function SetMovementKeys(){
@@ -160,6 +166,7 @@ function redraw(){
     updateEnemies();
     DrawUpdateBullets();
     DestroyBullets();
+    checkPlayerCollision();
     //drawTestLine();
 }
 
@@ -267,6 +274,8 @@ function CheckIntersection(object1Size, object1Pos, object2Size, object2Pos){
     var newLocation = new Victor(object2Pos.x,object2Pos.y);
     var distance = newLocation.distance(centerPosition);
 
+    //console.log(distance+" "+radius);
+
     if(distance <= radius){
         return true;
     }
@@ -327,4 +336,12 @@ function updateEnemies(){
     enemies.forEach(element => {
         element.updatePosition(Victor(player.position.x+playersize/2,player.position.y+playersize/2));
     });
+}
+
+function checkPlayerCollision(){
+    for(var j = 0; j < enemies.length; j++){
+        if(CheckIntersection(enemySize/2, enemies[j].position, playersize, player.position)){
+            initializeGame();
+        }
+    }
 }
