@@ -1,4 +1,6 @@
 # BulletJS
+Don't let the oncoming enemies touch you
+<br/>
 W - Up
 <br/>
 S - Down
