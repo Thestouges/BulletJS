@@ -16,7 +16,7 @@ var enemies;
 var enemySpawnDistance;
 var enemySpeed = 1;
 var enemySize = 50;
-var enemylimit = 1;
+var enemylimit = 30;
 
 var keyStack;
 
@@ -52,6 +52,7 @@ function initializeGame(){
     initializePlayer();
 
     enemySpawnDistance = Math.max(canvas.height, canvas.width);
+    //spawnEnemy();
 }
 
 function setEventListeners(){
@@ -151,6 +152,7 @@ function drawPlayer(){
 
     context.beginPath();
     context.arc(player.position.x,player.position.y,playersize/2,0,2*Math.PI);
+    //console.log(player.position);
     context.stroke();
 }
 
@@ -269,12 +271,13 @@ function DestroyBullets(){
 }
 
 function CheckIntersection(object1Size, object1Pos, object2Size, object2Pos){
-    var radius = object2Size - object1Size/2;
+    var radius = object2Size/2 + object1Size/2;
     var centerPosition = new Victor(object1Pos.x, object1Pos.y); 
     var newLocation = new Victor(object2Pos.x,object2Pos.y);
     var distance = newLocation.distance(centerPosition);
 
-    //console.log(distance+" "+radius);
+    //console.log(distance+";"+radius);
+    //console.log(object1Pos+";"+object2Pos);
 
     if(distance <= radius){
         return true;
@@ -304,9 +307,10 @@ function spawnEnemy(){
     if(enemies.length >= enemylimit){
         return;
     }
+    
     var posx = Math.random()*2 - 1;
     var posy = Math.random()*2 - 1;
-
+    
     var normVec = new Victor(posx, posy);
     normVec.normalize();
 
@@ -315,17 +319,20 @@ function spawnEnemy(){
     //console.log(normVec.toString());
 
     enemies.push(new Enemy(normVec,enemySpeed,0));
+    //console.log(enemies[0].position);
 }
 
 function drawEnemies(){
+    //console.log(enemies[0].position);
     enemies.forEach(element => {
+        //console.log(element.position);
         context.beginPath();
-        context.arc(element.position.x-enemySize/2,element.position.y-enemySize/2,enemySize/2,0,2*Math.PI);
+        context.arc(element.position.x,element.position.y,enemySize/2,0,2*Math.PI);
         context.stroke();
         
-        context.save();
+        //context.save();
         context.beginPath();
-        context.moveTo(element.position.x-enemySize/2, element.position.y-enemySize/2);
+        context.moveTo(element.position.x, element.position.y);
         context.lineTo(player.position.x,player.position.y);
         context.stroke();
         
@@ -334,14 +341,17 @@ function drawEnemies(){
 
 function updateEnemies(){
     enemies.forEach(element => {
-        element.updatePosition(Victor(player.position.x+playersize/2,player.position.y+playersize/2));
+        //console.log("pos:"+element.position);
+        element.updatePosition(new Victor(player.position.x, player.position.y));
     });
 }
 
 function checkPlayerCollision(){
     for(var j = 0; j < enemies.length; j++){
-        if(CheckIntersection(enemySize/2, enemies[j].position, playersize, player.position)){
+        //console.log(player.position + ";"+enemies[j].position)
+        if(CheckIntersection(playersize, player.position, enemySize, enemies[j].position )){
             initializeGame();
+            //enemies.splice(j,1);
         }
     }
 }
